@@ -444,6 +444,7 @@
     <ClInclude Include="shared\maxplayers.h" />
     <ClInclude Include="shared\misccommands.h" />
     <ClInclude Include="shared\playlist.h" />
+    <ClInclude Include="util\showtriggers.h" />
     <ClInclude Include="squirrel\squirrel.h" />
     <ClInclude Include="squirrel\squirrelautobind.h" />
     <ClInclude Include="squirrel\squirrelclasstypes.h" />
@@ -540,6 +541,7 @@
     <ClCompile Include="shared\maxplayers.cpp" />
     <ClCompile Include="shared\misccommands.cpp" />
     <ClCompile Include="shared\playlist.cpp" />
+    <ClCompile Include="util\showtriggers.cpp" />
     <ClCompile Include="squirrel\squirrel.cpp" />
     <ClCompile Include="squirrel\squirrelautobind.cpp" />
     <ClCompile Include="util\printcommands.cpp" />

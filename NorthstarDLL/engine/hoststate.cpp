@@ -9,6 +9,7 @@
 #include "squirrel/squirrel.h"
 #include "plugins/plugins.h"
 #include "plugins/pluginbackend.h"
+#include "util/showtriggers.h"
 
 AUTOHOOK_INIT()
 
@@ -188,6 +189,8 @@ void, __fastcall, (CHostState* self, double flCurrentTime, float flFrameTime))
 		g_pSquirrel<ScriptContext::SERVER>->ProcessMessageBuffer();
 
 	g_pGameStatePresence->RunFrame();
+
+	DrawEntTriggers();
 }
 
 ON_DLL_LOAD_RELIESON("engine.dll", HostState, ConVar, (CModule module))
