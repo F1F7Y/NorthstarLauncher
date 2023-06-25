@@ -98,6 +98,60 @@ void BuildTriggerMeshes()
 {
 	bHasBuiltMeshes = true;
 
+	/* vecTriggers.clear();
+	Trigger_t& trigger = vecTriggers.emplace_back();
+	Brush_t& brush = trigger.vecBrushes.emplace_back();
+	
+	//"*trigger_brush_0_plane_0" "-1 0 0 64"
+	//"*trigger_brush_0_plane_1" "1 0 0 64"
+	//"*trigger_brush_0_plane_2" "0 -1 0 64"
+	//"*trigger_brush_0_plane_3" "0 1 0 64"
+	//"*trigger_brush_0_plane_4" "0 0 -1 64"
+	//"*trigger_brush_0_plane_5" "0 0 1 64"
+	
+	{
+		Plane_t& plane = brush.vecPlanes.emplace_back();
+		plane.a = -1.0f;
+		plane.b = 0.0;
+		plane.c = 0.0;
+		plane.d = 1248.0f;
+	}
+	{
+		Plane_t& plane = brush.vecPlanes.emplace_back();
+		plane.a = 1.0f;
+		plane.b = 0.0;
+		plane.c = 0.0;
+		plane.d = 1248.0f;
+	}
+	{
+		Plane_t& plane = brush.vecPlanes.emplace_back();
+		plane.a = 0.0f;
+		plane.b = -1.0;
+		plane.c = 0.0;
+		plane.d = 568.0f;
+	}
+	{
+		Plane_t& plane = brush.vecPlanes.emplace_back();
+		plane.a = 0.0f;
+		plane.b = 1.0;
+		plane.c = 0.0;
+		plane.d = 568.0f;
+	}
+	{
+		Plane_t& plane = brush.vecPlanes.emplace_back();
+		plane.a = 0.0f;
+		plane.b = 0.0;
+		plane.c = -1.0;
+		plane.d = 336.0f;
+	}
+	{
+		Plane_t& plane = brush.vecPlanes.emplace_back();
+		plane.a = 0.0f;
+		plane.b = 0.0;
+		plane.c = 1.0;
+		plane.d = 336.0f;
+	}*/
+
 	spdlog::info("Building meshes for ent triggers!");
 
 	// ax + by + cz = -d
@@ -186,7 +240,23 @@ void BuildTriggerMeshes()
 						vertex.y = fDetB / fDet;
 						vertex.z = fDetC / fDet;
 
+						bool bInclude = false;
 						if (FloatInValid(vertex.x), FloatInValid(vertex.y), FloatInValid(vertex.z))
+							continue;
+
+						for (const Plane_t& plane : brush.vecPlanes)
+						{
+							float fPos = plane.a * vertex.x + plane.b * vertex.y + plane.c + vertex.z - plane.d;
+							//spdlog::error("{}", fPos);
+							if (fPos > -1.001f && fPos < 1.001f)
+							{
+								bInclude = true;
+								break;
+							}
+						}
+						//spdlog::error("----");
+
+						if (!bInclude)
 							continue;
 
 						bool bExists = false;
@@ -220,12 +290,12 @@ void DrawEntTriggers()
 				if (plane.vecVertices.size() < 3)
 					continue; //
 
-				for (std::size_t i = 1; i < plane.vecVertices.size() - 1; i++)
+				for (std::size_t i = 0; i < plane.vecVertices.size() - 2; i++)
 				{
 
-					const Vertex_t& vertexA = plane.vecVertices.at(0);
-					const Vertex_t& vertexB = plane.vecVertices.at(i);
-					const Vertex_t& vertexC = plane.vecVertices.at(i + 1);
+					const Vertex_t& vertexA = plane.vecVertices.at(i);
+					const Vertex_t& vertexB = plane.vecVertices.at(i + 1);
+					const Vertex_t& vertexC = plane.vecVertices.at(i + 2);
 
 					Vector3 vectorA = Vector3(vertexA.x, vertexA.y, vertexA.z);
 					Vector3 vectorB = Vector3(vertexB.x, vertexB.y, vertexB.z);
