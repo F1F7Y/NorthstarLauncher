@@ -67,6 +67,7 @@ struct Brush_t
 
 struct Trigger_t
 {
+	Vector3 origin;
 	std::vector<Brush_t> vecBrushes;
 };
 
@@ -97,8 +98,8 @@ bool FloatInValid(float f)
 void BuildTriggerMeshes()
 {
 	bHasBuiltMeshes = true;
-
-	/* vecTriggers.clear();
+	/*
+	vecTriggers.clear();
 	Trigger_t& trigger = vecTriggers.emplace_back();
 	Brush_t& brush = trigger.vecBrushes.emplace_back();
 	
@@ -240,17 +241,17 @@ void BuildTriggerMeshes()
 						vertex.y = fDetB / fDet;
 						vertex.z = fDetC / fDet;
 
-						bool bInclude = false;
+						bool bInclude = true;
 						if (FloatInValid(vertex.x), FloatInValid(vertex.y), FloatInValid(vertex.z))
 							continue;
 
 						for (const Plane_t& plane : brush.vecPlanes)
 						{
-							float fPos = plane.a * vertex.x + plane.b * vertex.y + plane.c + vertex.z - plane.d;
+							float fPos = plane.a * vertex.x + plane.b * vertex.y + plane.c * vertex.z + plane.d;
 							//spdlog::error("{}", fPos);
-							if (fPos > -1.001f && fPos < 1.001f)
+							if (fPos < 0.0f)
 							{
-								bInclude = true;
+								bInclude = false;
 								break;
 							}
 						}
@@ -297,16 +298,14 @@ void DrawEntTriggers()
 					const Vertex_t& vertexB = plane.vecVertices.at(i + 1);
 					const Vertex_t& vertexC = plane.vecVertices.at(i + 2);
 
-					Vector3 vectorA = Vector3(vertexA.x, vertexA.y, vertexA.z);
-					Vector3 vectorB = Vector3(vertexB.x, vertexB.y, vertexB.z);
-					Vector3 vectorC = Vector3(vertexC.x, vertexC.y, vertexC.z);
+					Vector3 vectorA = Vector3(vertexA.x + trigger.origin.x, vertexA.y + trigger.origin.y, vertexA.z + trigger.origin.z);
+					Vector3 vectorB = Vector3(vertexB.x + trigger.origin.x, vertexB.y + trigger.origin.y, vertexB.z + trigger.origin.z);
+					Vector3 vectorC = Vector3(vertexC.x + trigger.origin.x, vertexC.y + trigger.origin.y, vertexC.z + trigger.origin.z);
 
 					RenderTriangle(vectorA, vectorB, vectorC, Color(250, 200, 90, 70), true);
 				}
 			}
-			break;
 		}
-		break;
 	}
 
 	// Vector3 start(0.0, 0.0, 0.0);
@@ -330,24 +329,6 @@ void ConCommand_ns_showtriggers(const CCommand& arg)
 		spdlog::info("enabled drawing ent triggers!");
 
 	bShouldDrawTriggers = !bShouldDrawTriggers;
-
-	for (const Trigger_t& trigger : vecTriggers)
-	{
-		spdlog::warn("Trigger has {:d} brushes", trigger.vecBrushes.size());
-		for (const Brush_t& brush : trigger.vecBrushes)
-		{
-			spdlog::warn("\tBrush has {:d} planes", brush.vecPlanes.size());
-			for (const Plane_t& plane : brush.vecPlanes)
-			{
-				spdlog::warn("\t\tPlane {:.3f} {:.3f} {:.3f} {:.3f} has {:d} verts", plane.a, plane.b, plane.c, plane.d, plane.vecVertices.size());
-				for (const Vertex_t& vert : plane.vecVertices)
-				{
-					spdlog::warn("\t\t\tVerT: {:.3} {:.3} {:.3}", vert.x, vert.y, vert.z);
-				}
-			}
-		}
-		break;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -372,11 +353,19 @@ AUTOHOOK(LoadBSP, engine.dll + 0x126930,
 //-----------------------------------------------------------------------------
 // Purpose: Parses trigger key values
 //-----------------------------------------------------------------------------
+float x, y, z;
+bool bShouldSetOrigin = false;
 // clang-format off
 AUTOHOOK(ParseEntTrigger, server.dll + 0x255E60,
 	bool, __fastcall, (void* a1, char* szKey, char* szValue))
 // clang-format on
 {
+	if (strncmp(szKey, "origin", sizeof("origin") - 1) == 0)
+	{
+		sscanf(szValue, "%f %f %f", &x, &y, &z);
+		bShouldSetOrigin = true;
+	}
+
 	if (*szKey == '*')
 	{
 		// Brush / plane kv
@@ -392,6 +381,11 @@ AUTOHOOK(ParseEntTrigger, server.dll + 0x255E60,
 				vecTriggers.emplace_back();
 
 			Trigger_t& trigger = vecTriggers.back();
+			if (bShouldSetOrigin)
+			{
+				trigger.origin = Vector3(x, y, z);
+				bShouldSetOrigin = false;
+			}
 
 			if (iBrush == trigger.vecBrushes.size())
 				trigger.vecBrushes.emplace_back();
@@ -410,26 +404,21 @@ AUTOHOOK(ParseEntTrigger, server.dll + 0x255E60,
 	return ParseEntTrigger(a1, szKey, szValue);
 }
 
-#include <mutex>
-
-std::mutex s_OverlayMutex;
-
 //-----------------------------------------------------------------------------
 // Purpose: Draws all overlays
 //-----------------------------------------------------------------------------
 // clang-format off
 AUTOHOOK(DrawAllOverlays, engine.dll + 0xAB780,
-void, __fastcall, (char a1))
+void, __fastcall, (bool a1))
 // clang-format on
 {
 	// TODO [Fifty]: Check enable_debug_overlays here
 	DrawAllOverlays(a1);
 
-	s_OverlayMutex.lock();
+	if (!a1)
+		return;
 
 	DrawEntTriggers();
-
-	s_OverlayMutex.unlock();
 }
 
 ON_DLL_LOAD("server.dll", ShowTriggersServer, (CModule module))
