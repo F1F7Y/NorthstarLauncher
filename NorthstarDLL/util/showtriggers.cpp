@@ -353,6 +353,7 @@ AUTOHOOK(LoadBSP, engine.dll + 0x126930,
 //-----------------------------------------------------------------------------
 // Purpose: Parses trigger key values
 //-----------------------------------------------------------------------------
+// TODO [fifty]: hook caller function as this one gets called on individual kvs
 float x, y, z;
 bool bShouldSetOrigin = false;
 // clang-format off
