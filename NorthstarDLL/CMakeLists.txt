@@ -133,6 +133,7 @@ add_library(NorthstarDLL SHARED
             "util/printcommands.h"
             "util/printmaps.cpp"
             "util/printmaps.h"
+            "util/showtriggers.cpp"
             "util/utils.cpp"
             "util/utils.h"
             "util/version.cpp"

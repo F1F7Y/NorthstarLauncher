@@ -153,14 +153,6 @@ void, __fastcall, (OverlayBase_t * pOverlay))
 	}
 	LeaveCriticalSection(s_OverlayMutex);
 }
-// clang-format off
-AUTOHOOK(DrawAllOverlays, engine.dll + 0xAB780,
-void, __fastcall, (char a1))
-// clang-format on
-{
-	// TODO [Fifty]: Check enable_debug_overlays here
-	DrawAllOverlays(a1);
-}
 
 ON_DLL_LOAD_CLIENT_RELIESON("engine.dll", DebugOverlay, ConVar, (CModule module))
 {
