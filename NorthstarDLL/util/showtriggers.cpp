@@ -68,6 +68,7 @@ struct Brush_t
 struct Trigger_t
 {
 	Vector3 origin;
+	Color colour = Color(255,255,255,20);
 	std::vector<Brush_t> vecBrushes;
 };
 
@@ -102,14 +103,14 @@ void BuildTriggerMeshes()
 	vecTriggers.clear();
 	Trigger_t& trigger = vecTriggers.emplace_back();
 	Brush_t& brush = trigger.vecBrushes.emplace_back();
-	
+
 	//"*trigger_brush_0_plane_0" "-1 0 0 64"
 	//"*trigger_brush_0_plane_1" "1 0 0 64"
 	//"*trigger_brush_0_plane_2" "0 -1 0 64"
 	//"*trigger_brush_0_plane_3" "0 1 0 64"
 	//"*trigger_brush_0_plane_4" "0 0 -1 64"
 	//"*trigger_brush_0_plane_5" "0 0 1 64"
-	
+
 	{
 		Plane_t& plane = brush.vecPlanes.emplace_back();
 		plane.a = -1.0f;
@@ -183,7 +184,7 @@ void BuildTriggerMeshes()
 						const Plane_t& planeC = brush.vecPlanes.at(k);
 
 						// Main matrix
-					    float a, b, c, d, e, f, g, h, i;
+						float a, b, c, d, e, f, g, h, i;
 						a = planeA.a;
 						b = planeA.b;
 						c = planeA.c;
@@ -248,14 +249,14 @@ void BuildTriggerMeshes()
 						for (const Plane_t& plane : brush.vecPlanes)
 						{
 							float fPos = plane.a * vertex.x + plane.b * vertex.y + plane.c * vertex.z + plane.d;
-							//spdlog::error("{}", fPos);
+							// spdlog::error("{}", fPos);
 							if (fPos < 0.0f)
 							{
 								bInclude = false;
 								break;
 							}
 						}
-						//spdlog::error("----");
+						// spdlog::error("----");
 
 						if (!bInclude)
 							continue;
@@ -302,7 +303,9 @@ void DrawEntTriggers()
 					Vector3 vectorB = Vector3(vertexB.x + trigger.origin.x, vertexB.y + trigger.origin.y, vertexB.z + trigger.origin.z);
 					Vector3 vectorC = Vector3(vertexC.x + trigger.origin.x, vertexC.y + trigger.origin.y, vertexC.z + trigger.origin.z);
 
-					RenderTriangle(vectorA, vectorB, vectorC, Color(250, 200, 90, 70), true);
+					Color colour = trigger.colour;
+
+					RenderTriangle(vectorA, vectorB, vectorC, colour, true);
 				}
 			}
 		}
@@ -356,6 +359,8 @@ AUTOHOOK(LoadBSP, engine.dll + 0x126930,
 // TODO [fifty]: hook caller function as this one gets called on individual kvs
 float x, y, z;
 bool bShouldSetOrigin = false;
+Color colour = Color(100, 100, 100, 90);
+bool bShouldSetColour = false;
 // clang-format off
 AUTOHOOK(ParseEntTrigger, server.dll + 0x255E60,
 	bool, __fastcall, (void* a1, char* szKey, char* szValue))
@@ -365,6 +370,27 @@ AUTOHOOK(ParseEntTrigger, server.dll + 0x255E60,
 	{
 		sscanf(szValue, "%f %f %f", &x, &y, &z);
 		bShouldSetOrigin = true;
+	}
+	if (strncmp(szKey, "classname", sizeof("classname") - 1) == 0)
+	{
+		colour = Color(100, 100, 100, 90);
+		if (strncmp(szValue, "trigger_hurt", sizeof("trigger_hurt") - 1) == 0)
+		{
+			colour = Color(240, 10, 10, 90); // Red
+		}
+		else if (strncmp(szValue, "trigger_out_of_bounds", sizeof("trigger_out_of_bounds") - 1) == 0)
+		{
+			colour = Color(230, 200, 90, 90); // Yellow
+		}
+		else if (strncmp(szValue, "trigger_multiple", sizeof("trigger_multiple") - 1) == 0)
+		{
+			colour = Color(20, 200, 20, 90); // Greer
+		}
+		else if (strncmp(szValue, "trigger_once", sizeof("trigger_once") - 1) == 0)
+		{
+			colour = Color(20, 30, 230, 90); // Blue-ish
+		}
+		bShouldSetColour = true;
 	}
 
 	if (*szKey == '*')
@@ -387,7 +413,11 @@ AUTOHOOK(ParseEntTrigger, server.dll + 0x255E60,
 				trigger.origin = Vector3(x, y, z);
 				bShouldSetOrigin = false;
 			}
-
+			if (bShouldSetColour)
+			{
+				trigger.colour = colour;
+				bShouldSetColour = false;
+			}
 			if (iBrush == trigger.vecBrushes.size())
 				trigger.vecBrushes.emplace_back();
 
