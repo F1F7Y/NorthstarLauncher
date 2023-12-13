@@ -231,6 +231,13 @@ namespace R2
 	extern char* g_pModName;
 
 	// clang-format off
+	enum GameMode_t
+	{
+		NO_MODE = 0,
+		MP_MODE,
+		SP_MODE,
+	};
+
 	class CGlobalVarsBase
 	{
 	public:
@@ -258,6 +265,12 @@ namespace R2
 		float m_Unk13;
 	};
 	static_assert(sizeof(CGlobalVarsBase) == 0x60);
+
+	enum MapLoadType_t
+	{
+		MapLoad_NewGame = 0,
+		MapLoad_Background = 2
+	};
 
 	class CGlobalVars : public CGlobalVarsBase
 	{
