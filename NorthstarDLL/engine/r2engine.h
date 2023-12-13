@@ -216,7 +216,7 @@ namespace R2
 	static_assert(sizeof(CClient) == 0x2D728);
 	// clang-format on
 
-	extern CBaseClient* g_pClientArray;
+	extern CClient* g_pClientArray;
 
 	enum server_state_t
 	{

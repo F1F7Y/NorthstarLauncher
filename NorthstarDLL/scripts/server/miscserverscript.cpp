@@ -18,7 +18,7 @@ ADD_SQFUNC("void", NSEarlyWritePlayerPersistenceForLeave, "entity player", "", S
 		return SQRESULT_NOTNULL;
 	}
 
-	R2::CBaseClient* pClient = &R2::g_pClientArray[pPlayer->m_nPlayerIndex - 1];
+	R2::CClient* pClient = &R2::g_pClientArray[pPlayer->m_nPlayerIndex - 1];
 	if (g_pServerAuthentication->m_PlayerAuthenticationData.find(pClient) == g_pServerAuthentication->m_PlayerAuthenticationData.end())
 	{
 		g_pSquirrel<context>->pushbool(sqvm, false);
@@ -47,7 +47,7 @@ ADD_SQFUNC("bool", NSIsPlayerLocalPlayer, "entity player", "", ScriptContext::SE
 		return SQRESULT_NOTNULL;
 	}
 
-	R2::CBaseClient* pClient = &R2::g_pClientArray[pPlayer->m_nPlayerIndex - 1];
+	R2::CClient* pClient = &R2::g_pClientArray[pPlayer->m_nPlayerIndex - 1];
 	g_pSquirrel<context>->pushbool(sqvm, !strcmp(R2::g_pLocalPlayerUserID, pClient->m_UID));
 	return SQRESULT_NOTNULL;
 }
@@ -77,10 +77,10 @@ ADD_SQFUNC(
 	}
 
 	// Shouldn't happen but I like sanity checks.
-	R2::CBaseClient* pClient = &R2::g_pClientArray[pPlayer->m_nPlayerIndex - 1];
+	R2::CClient* pClient = &R2::g_pClientArray[pPlayer->m_nPlayerIndex - 1];
 	if (!pClient)
 	{
-		spdlog::warn("NSDisconnectPlayer(): player entity has null CBaseClient!");
+		spdlog::warn("NSDisconnectPlayer(): player entity has null CClient!");
 
 		g_pSquirrel<context>->pushbool(sqvm, false);
 		return SQRESULT_NOTNULL;
@@ -88,11 +88,11 @@ ADD_SQFUNC(
 
 	if (reason)
 	{
-		R2::CBaseClient__Disconnect(pClient, 1, reason);
+		R2::CClient__Disconnect(pClient, 1, reason);
 	}
 	else
 	{
-		R2::CBaseClient__Disconnect(pClient, 1, "Disconnected by the server.");
+		R2::CClient__Disconnect(pClient, 1, "Disconnected by the server.");
 	}
 
 	g_pSquirrel<context>->pushbool(sqvm, true);

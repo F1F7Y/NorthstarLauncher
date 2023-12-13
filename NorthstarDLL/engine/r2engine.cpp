@@ -14,7 +14,7 @@ namespace R2
 	CEngine* g_pEngine;
 
 	void (*CBaseClient__Disconnect)(void* self, uint32_t unknownButAlways1, const char* reason, ...);
-	CBaseClient* g_pClientArray;
+	CClient* g_pClientArray;
 
 	server_state_t* g_pServerState;
 

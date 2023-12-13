@@ -40,7 +40,7 @@ void ServerAuthenticationManager::AddRemotePlayer(std::string token, uint64_t ui
 	m_RemoteAuthenticationData[token] = newAuthData;
 }
 
-void ServerAuthenticationManager::AddPlayer(R2::CBaseClient* pPlayer, const char* pToken)
+void ServerAuthenticationManager::AddPlayer(R2::CClient* pPlayer, const char* pToken)
 {
 	PlayerAuthenticationData additionalData;
 
@@ -55,7 +55,7 @@ void ServerAuthenticationManager::AddPlayer(R2::CBaseClient* pPlayer, const char
 	m_PlayerAuthenticationData.insert(std::make_pair(pPlayer, additionalData));
 }
 
-void ServerAuthenticationManager::RemovePlayer(R2::CBaseClient* pPlayer)
+void ServerAuthenticationManager::RemovePlayer(R2::CClient* pPlayer)
 {
 	if (m_PlayerAuthenticationData.count(pPlayer))
 		m_PlayerAuthenticationData.erase(pPlayer);
@@ -88,7 +88,7 @@ bool ServerAuthenticationManager::VerifyPlayerName(const char* pAuthToken, const
 	return true;
 }
 
-bool ServerAuthenticationManager::IsDuplicateAccount(R2::CBaseClient* pPlayer, const char* pPlayerUid)
+bool ServerAuthenticationManager::IsDuplicateAccount(R2::CClient* pPlayer, const char* pPlayerUid)
 {
 	if (m_bAllowDuplicateAccounts)
 		return false;
@@ -101,7 +101,7 @@ bool ServerAuthenticationManager::IsDuplicateAccount(R2::CBaseClient* pPlayer, c
 	return false;
 }
 
-bool ServerAuthenticationManager::CheckAuthentication(R2::CBaseClient* pPlayer, uint64_t iUid, char* pAuthToken)
+bool ServerAuthenticationManager::CheckAuthentication(R2::CClient* pPlayer, uint64_t iUid, char* pAuthToken)
 {
 	std::string sUid = std::to_string(iUid);
 
@@ -126,7 +126,7 @@ bool ServerAuthenticationManager::CheckAuthentication(R2::CBaseClient* pPlayer, 
 	return false;
 }
 
-void ServerAuthenticationManager::AuthenticatePlayer(R2::CBaseClient* pPlayer, uint64_t iUid, char* pAuthToken)
+void ServerAuthenticationManager::AuthenticatePlayer(R2::CClient* pPlayer, uint64_t iUid, char* pAuthToken)
 {
 	// for bot players, generate a new uid
 	if (pPlayer->m_bFakePlayer)
@@ -160,7 +160,7 @@ void ServerAuthenticationManager::AuthenticatePlayer(R2::CBaseClient* pPlayer, u
 	}
 }
 
-bool ServerAuthenticationManager::RemovePlayerAuthData(R2::CBaseClient* pPlayer)
+bool ServerAuthenticationManager::RemovePlayerAuthData(R2::CClient* pPlayer)
 {
 	if (!Cvar_ns_erase_auth_info->GetBool()) // keep auth data forever
 		return false;
@@ -187,7 +187,7 @@ bool ServerAuthenticationManager::RemovePlayerAuthData(R2::CBaseClient* pPlayer)
 	return false;
 }
 
-void ServerAuthenticationManager::WritePersistentData(R2::CBaseClient* pPlayer)
+void ServerAuthenticationManager::WritePersistentData(R2::CClient* pPlayer)
 {
 	if (pPlayer->m_iPersistenceReady == R2::ePersistenceReady::READY_REMOTE)
 	{
@@ -240,7 +240,7 @@ ConVar* Cvar_ns_allowuserclantags;
 
 // clang-format off
 AUTOHOOK(CBaseClient__Connect, engine.dll + 0x101740,
-bool,, (R2::CBaseClient* self, char* pName, void* pNetChannel, char bFakePlayer, void* a5, char pDisconnectReason[256], void* a7))
+bool,, (R2::CClient* self, char* pName, void* pNetChannel, char bFakePlayer, void* a5, char pDisconnectReason[256], void* a7))
 // clang-format on
 {
 	const char* pAuthenticationFailure = nullptr;
@@ -281,7 +281,7 @@ bool,, (R2::CBaseClient* self, char* pName, void* pNetChannel, char bFakePlayer,
 
 // clang-format off
 AUTOHOOK(CBaseClient__ActivatePlayer, engine.dll + 0x100F80,
-void,, (R2::CBaseClient* self))
+void,, (R2::CClient* self))
 // clang-format on
 {
 	// if we're authed, write our persistent data
@@ -299,7 +299,7 @@ void,, (R2::CBaseClient* self))
 
 // clang-format off
 AUTOHOOK(_CBaseClient__Disconnect, engine.dll + 0x1012C0,
-void,, (R2::CBaseClient* self, uint32_t unknownButAlways1, const char* pReason, ...))
+void,, (R2::CClient* self, uint32_t unknownButAlways1, const char* pReason, ...))
 // clang-format on
 {
 	// have to manually format message because can't pass varargs to original func
