@@ -10,5 +10,5 @@ namespace R2
 	class CBaseEntity;
 	extern CBaseEntity* (*Server_GetEntityByIndex)(int index);
 
-	extern CBasePlayer*(__fastcall* UTIL_PlayerByIndex)(int playerIndex);
+	extern CPlayer*(__fastcall* UTIL_PlayerByIndex)(int playerIndex);
 } // namespace R2

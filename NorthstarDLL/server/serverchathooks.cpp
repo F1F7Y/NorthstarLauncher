@@ -75,7 +75,7 @@ void ChatSendMessage(unsigned int playerIndex, const char* text, bool isTeam)
 
 void ChatBroadcastMessage(int fromPlayerIndex, int toPlayerIndex, const char* text, bool isTeam, bool isDead, CustomMessageType messageType)
 {
-	R2::CBasePlayer* toPlayer = NULL;
+	R2::CPlayer* toPlayer = NULL;
 	if (toPlayerIndex >= 0)
 	{
 		toPlayer = R2::UTIL_PlayerByIndex(toPlayerIndex + 1);
