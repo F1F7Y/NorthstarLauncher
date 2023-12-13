@@ -165,8 +165,8 @@ void,, (bool a1, float a2))
 	__int64 v25[NEW_MAX_PLAYERS]; // [rsp+20h] [rbp-138h] BYREF
 
 	uintptr_t base = (__int64)serverBase;
-	auto g_pGlobals = *(__int64*)(base + 0xBFBE08);
-	__int64 globals = g_pGlobals;
+	auto g_pServerGlobalVariables = *(__int64*)(base + 0xBFBE08);
+	__int64 globals = g_pServerGlobalVariables;
 
 	auto g_pEngineServer = *(__int64*)(base + 0xBFBD98);
 
@@ -182,27 +182,27 @@ void,, (bool a1, float a2))
 	auto sub_1805A6E50 = (bool(__fastcall*)(__int64, int, char))(base + 0x5A6E50);
 	auto sub_1805A6C20 = (void(__fastcall*)(__int64))(base + 0x5A6C20);
 
-	v3 = *(unsigned char*)(g_pGlobals + 73);
+	v3 = *(unsigned char*)(g_pServerGlobalVariables + 73);
 	if (*(DWORD*)(qword_1814D9648 + 92) &&
 		((*(unsigned __int8(__fastcall**)(__int64))(*(__int64*)g_pEngineServer + 32))(g_pEngineServer) ||
 		 !*(DWORD*)(qword_1814DA408 + 92)) &&
 		v3)
 	{
-		globals = g_pGlobals;
+		globals = g_pServerGlobalVariables;
 		v5 = 1;
-		for (i = 1; i <= *(DWORD*)(g_pGlobals + 52); ++i)
+		for (i = 1; i <= *(DWORD*)(g_pServerGlobalVariables + 52); ++i)
 		{
 			v7 = UTIL_PlayerByIndex(i);
 			v8 = (DWORD*)v7;
 			if (v7)
 			{
 				*(__int64*)(base + 0x1210420) = v7;
-				*(float*)(g_pGlobals + 16) = a2;
+				*(float*)(g_pServerGlobalVariables + 16) = a2;
 				if (!a1)
 					sub_18058CD80(v7);
 				sub_1805A6D90((__int64)v8);
 			}
-			globals = g_pGlobals;
+			globals = g_pServerGlobalVariables;
 		}
 		memset(v25, 0, sizeof(v25));
 		v9 = 0;
@@ -212,7 +212,7 @@ void,, (bool a1, float a2))
 			do
 			{
 				v11 = UTIL_PlayerByIndex(++v9);
-				globals = g_pGlobals;
+				globals = g_pServerGlobalVariables;
 				*v10++ = v11;
 			} while (v9 < *(DWORD*)(globals + 52));
 		}
@@ -231,7 +231,7 @@ void,, (bool a1, float a2))
 					v25[v13 + 1] = v25[v17];
 					v25[v17] = v16;
 				} while (v13 >= 1);
-				globals = g_pGlobals;
+				globals = g_pServerGlobalVariables;
 			}
 		}
 		v18 = 1;
@@ -250,7 +250,7 @@ void,, (bool a1, float a2))
 						*(__int64*)(base + 0x1210420) = *v21;
 						*(float*)(globals + 16) = a2;
 						v23 = sub_1805A6E50(v22, v12, v18);
-						globals = g_pGlobals;
+						globals = g_pServerGlobalVariables;
 						if (v23)
 							v19 = 1;
 						else
@@ -270,11 +270,11 @@ void,, (bool a1, float a2))
 				if (v24)
 				{
 					*(__int64*)(base + 0x1210420) = v24;
-					*(float*)(g_pGlobals + 16) = a2;
+					*(float*)(g_pServerGlobalVariables + 16) = a2;
 					sub_1805A6C20(v24);
 				}
 				++v5;
-			} while (v5 <= *(DWORD*)(g_pGlobals + 52));
+			} while (v5 <= *(DWORD*)(g_pServerGlobalVariables + 52));
 		}
 		sub_180485590(*(__int64*)(base + 0xB7B2D8));
 	}

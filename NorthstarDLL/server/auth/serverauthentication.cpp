@@ -94,7 +94,7 @@ bool ServerAuthenticationManager::IsDuplicateAccount(R2::CBaseClient* pPlayer, c
 		return false;
 
 	bool bHasUidPlayer = false;
-	for (int i = 0; i < R2::g_pGlobals->m_nMaxClients; i++)
+	for (int i = 0; i < R2::g_pServerGlobalVariables->m_nMaxClients; i++)
 		if (&R2::g_pClientArray[i] != pPlayer && !strcmp(pPlayerUid, R2::g_pClientArray[i].m_UID))
 			return true;
 
@@ -313,7 +313,7 @@ void,, (R2::CBaseClient* self, uint32_t unknownButAlways1, const char* pReason, 
 	// this reason is used while connecting to a local server, hacky, but just ignore it
 	if (strcmp(pReason, "Connection closing"))
 	{
-		spdlog::info("Player {} disconnected: \"{}\"", self->m_Name, buf);
+		spdlog::info("Player {} disconnected: \"{}\"", self->m_szServerName, buf);
 
 		// dcing, write persistent data
 		if (g_pServerAuthentication->m_PlayerAuthenticationData[self].needPersistenceWriteOnLeave)

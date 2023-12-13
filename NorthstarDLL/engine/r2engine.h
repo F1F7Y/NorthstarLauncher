@@ -174,18 +174,46 @@ namespace R2
 	};
 
 	// clang-format off
-	OFFSET_STRUCT(CBaseClient)
+	class CClient
 	{
-		STRUCT_SIZE(0x2D728)
-		FIELD(0x16, char m_Name[64])
-		FIELD(0x258, KeyValues* m_ConVars)
-		FIELD(0x2A0, eSignonState m_Signon)
-		FIELD(0x358, char m_ClanTag[16])
-		FIELD(0x484, bool m_bFakePlayer)
-		FIELD(0x4A0, ePersistenceReady m_iPersistenceReady)
-		FIELD(0x4FA, char m_PersistenceBuffer[PERSISTENCE_MAX_SIZE])
-		FIELD(0xF500, char m_UID[32])
+		void* vftable;
+		void* vftable2;
+
+	public:
+		uint32_t m_nUserID;
+		uint16_t m_nHandle;
+		char m_szServerName[64];
+		int64_t m_nReputation;
+		char pad_0014[182];
+		char m_szClientName[64];
+		char pad_0015[252];
+		KeyValues* m_ConVars;
+		char pad_0368[8];
+		void* m_pServer;
+		char pad_0378[32];
+		void* m_NetChannel;
+		char pad_03A8[8];
+		eSignonState m_nSignonState;
+		int32_t m_nDeltaTick;
+		uint64_t m_nOriginID;
+		int32_t m_nStringTableAckTick;
+		int32_t m_nSignonTick;
+		char pad_03C0[160];
+		char m_szClanTag[16];
+		char pad2[284];
+		bool m_bFakePlayer;
+		bool m_bReceivedPacket;
+		bool m_bLowViolence;
+		bool m_bFullyAuthenticated;
+		char pad_05A4[24];
+		ePersistenceReady m_iPersistenceReady;
+		char pad_05C0[89];
+		char m_PersistenceBuffer[PERSISTENCE_MAX_SIZE];
+		char pad[4665];
+		char m_UID[32];
+		char pad0[0x1E208];
 	};
+	static_assert(sizeof(CClient) == 0x2D728);
 	// clang-format on
 
 	extern CBaseClient* g_pClientArray;
@@ -203,62 +231,48 @@ namespace R2
 	extern char* g_pModName;
 
 	// clang-format off
-	OFFSET_STRUCT(CGlobalVars)
+	class CGlobalVarsBase
 	{
-		FIELD(0x0,
-			// Absolute time (per frame still - Use Plat_FloatTime() for a high precision real time 
-			//  perf clock, but not that it doesn't obey host_timescale/host_framerate)
-			double m_flRealTime);
-
-		FIELDS(0x8,
-			// Absolute frame counter - continues to increase even if game is paused
-			int m_nFrameCount;
-		
-			// Non-paused frametime
-			float m_flAbsoluteFrameTime;
-		
-			// Current time 
-			//
-			// On the client, this (along with tickcount) takes a different meaning based on what
-			// piece of code you're in:
-			// 
-			//   - While receiving network packets (like in PreDataUpdate/PostDataUpdate and proxies),
-			//     this is set to the SERVER TICKCOUNT for that packet. There is no interval between
-			//     the server ticks.
-			//     [server_current_Tick * tick_interval]
-			//
-			//   - While rendering, this is the exact client clock 
-			//     [client_current_tick * tick_interval + interpolation_amount]
-			//
-			//   - During prediction, this is based on the client's current tick:
-			//     [client_current_tick * tick_interval]
-			float m_flCurTime;
-		)
-
-		FIELDS(0x30,
-			// Time spent on last server or client frame (has nothing to do with think intervals)
-			float m_flFrameTime;
-
-			// current maxplayers setting
-			int m_nMaxClients;
-		)
-
-		FIELDS(0x3C,
-			// Simulation ticks - does not increase when game is paused
-			uint32_t m_nTickCount; // this is weird and doesn't seem to increase once per frame?
-
-			// Simulation tick interval
-			float m_flTickInterval;
-		)
-
-		FIELDS(0x60,
-			const char* m_pMapName;
-			int m_nMapVersion;
-		)
-
-		//FIELD(0x98, double m_flRealTime); // again?
+	public:
+		double m_flRealTime;
+		int m_nFrameCount;
+		float m_flAbsoluteFrameTime;
+		float m_flCurTime;
+		float m_fUnk0;
+		float m_fUnk1;
+		float m_fUnk2;
+		float m_fUnk3;
+		float m_fUnk4;
+		float m_fUnk5;
+		float m_fUnk6;
+		float m_flFrameTime;
+		int m_nMaxClients;
+		GameMode_t m_nGameMode;
+		float m_Unk7;
+		float m_flTickInterval;
+		float m_Unk8;
+		float m_Unk9;
+		float m_Unk10;
+		float m_Unk11;
+		float m_Unk12;
+		float m_Unk13;
 	};
-	// clang-format on
+	static_assert(sizeof(CGlobalVarsBase) == 0x60);
 
-	extern CGlobalVars* g_pGlobals;
+	class CGlobalVars : public CGlobalVarsBase
+	{
+	public:
+		const char* m_pMapName;
+		int m_nMapVersion;
+		const char* m_pTest;
+		MapLoadType_t m_MapLoadType;
+		__int64 gap0;
+		void* m_pUnk0;
+		__int64 gap;
+		void* m_pUnk1;
+		__int64 m_Unk2;
+	};
+	static_assert(sizeof(CGlobalVars) == 0xA8);
+
+	extern CGlobalVars* g_pServerGlobalVariables;
 } // namespace R2

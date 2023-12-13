@@ -18,10 +18,11 @@ namespace R2
 
 	server_state_t* g_pServerState;
 
+	// TODO [Fifty]: engine.dll + 0x13159310 is EngineParms_t which holds this.
 	char* g_pModName =
 		nullptr; // we cant set this up here atm since we dont have an offset to it in engine, instead we store it in IsRespawnMod
 
-	CGlobalVars* g_pGlobals;
+	CGlobalVars* g_pServerGlobalVariables;
 } // namespace R2
 
 ON_DLL_LOAD("engine.dll", R2Engine, (CModule module))
@@ -39,5 +40,5 @@ ON_DLL_LOAD("engine.dll", R2Engine, (CModule module))
 
 	g_pServerState = module.Offset(0x12A53D48).RCast<server_state_t*>();
 
-	g_pGlobals = module.Offset(0x7C6F70).RCast<CGlobalVars*>();
+	g_pServerGlobalVariables = module.Offset(0x7C6F70).RCast<CGlobalVars*>();
 }

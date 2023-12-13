@@ -21,11 +21,11 @@ void DedicatedServerLogToClientSink::custom_sink_it_(const custom_log_msg& msg)
 		return;
 
 	std::string sLogMessage = fmt::format("[DEDICATED SERVER] [{}] {}", level_names[msg.level], msg.payload);
-	for (int i = 0; i < R2::g_pGlobals->m_nMaxClients; i++)
+	for (int i = 0; i < R2::g_pServerGlobalVariables->m_nMaxClients; i++)
 	{
 		R2::CBaseClient* pClient = &R2::g_pClientArray[i];
 
-		if (pClient->m_Signon >= R2::eSignonState::CONNECTED)
+		if (pClient->m_nSignonState >= R2::eSignonState::CONNECTED)
 		{
 			CGameClient__ClientPrintf(pClient, sLogMessage.c_str());
 
