@@ -25,7 +25,7 @@ void(__fastcall* CServerGameDLL__OnReceivedSayTextMessage)(
 void(__fastcall* CRecipientFilter__Construct)(CRecipientFilter* self);
 void(__fastcall* CRecipientFilter__Destruct)(CRecipientFilter* self);
 void(__fastcall* CRecipientFilter__AddAllPlayers)(CRecipientFilter* self);
-void(__fastcall* CRecipientFilter__AddRecipient)(CRecipientFilter* self, const R2::CBasePayer* player);
+void(__fastcall* CRecipientFilter__AddRecipient)(CRecipientFilter* self, const R2::CPlayer* player);
 void(__fastcall* CRecipientFilter__MakeReliable)(CRecipientFilter* self);
 
 void(__fastcall* UserMessageBegin)(CRecipientFilter* filter, const char* messagename);
@@ -163,7 +163,7 @@ ON_DLL_LOAD_RELIESON("server.dll", ServerChatHooks, ServerSquirrel, (CModule mod
 	CRecipientFilter__Construct = module.Offset(0x1E9440).RCast<void(__fastcall*)(CRecipientFilter*)>();
 	CRecipientFilter__Destruct = module.Offset(0x1E9700).RCast<void(__fastcall*)(CRecipientFilter*)>();
 	CRecipientFilter__AddAllPlayers = module.Offset(0x1E9940).RCast<void(__fastcall*)(CRecipientFilter*)>();
-	CRecipientFilter__AddRecipient = module.Offset(0x1E9B30).RCast<void(__fastcall*)(CRecipientFilter*, const R2::CBasePayer*)>();
+	CRecipientFilter__AddRecipient = module.Offset(0x1E9B30).RCast<void(__fastcall*)(CRecipientFilter*, const R2::CPlayer*)>();
 	CRecipientFilter__MakeReliable = module.Offset(0x1EA4E0).RCast<void(__fastcall*)(CRecipientFilter*)>();
 
 	UserMessageBegin = module.Offset(0x15C520).RCast<void(__fastcall*)(CRecipientFilter*, const char*)>();
