@@ -1,10 +1,9 @@
 #pragma once
 
-#include "engine/edict.h"
 #include "core/math/color.h"
 #include "core/math/vector.h"
 
-inline void* g_pCPlayer_VFTable = nullptr;
+typedef uint16_t edict_t;
 
 class CBaseEntity;
 
@@ -52,11 +51,6 @@ static_assert(sizeof(CCollisionProperty) == 112);
 class CBaseEntity // : public IServerEntity
 {
   public:
-	bool IsPlayer() const
-	{
-		return vftable == g_pCPlayer_VFTable;
-	}
-
 	void* vftable;
 
 	uint32_t m_RefEHandle; // 0x8 ( Size: 4 ) // handle
