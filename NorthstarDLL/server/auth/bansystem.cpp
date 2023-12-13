@@ -193,7 +193,7 @@ void ConCommand_ban(const CCommand& args)
 		if (!strcmp(player->m_szServerName, args.Arg(1)) || !strcmp(player->m_UID, args.Arg(1)))
 		{
 			g_pBanSystem->BanUID(strtoull(player->m_UID, nullptr, 10));
-			R2::CClient__Disconnect(player, 1, "Banned from server");
+			R2::CBaseClient__Disconnect(player, 1, "Banned from server");
 			break;
 		}
 	}

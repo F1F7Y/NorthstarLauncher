@@ -88,11 +88,11 @@ ADD_SQFUNC(
 
 	if (reason)
 	{
-		R2::CClient__Disconnect(pClient, 1, reason);
+		R2::CBaseClient__Disconnect(pClient, 1, reason);
 	}
 	else
 	{
-		R2::CClient__Disconnect(pClient, 1, "Disconnected by the server.");
+		R2::CBaseClient__Disconnect(pClient, 1, "Disconnected by the server.");
 	}
 
 	g_pSquirrel<context>->pushbool(sqvm, true);
