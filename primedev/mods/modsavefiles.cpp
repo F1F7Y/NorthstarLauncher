@@ -373,6 +373,11 @@ ADD_SQFUNC("int", NS_InternalLoadFile, "string file", "", ScriptContext::SERVER 
 ADD_SQFUNC("bool", NSDoesFileExist, "string file", "", ScriptContext::SERVER | ScriptContext::CLIENT | ScriptContext::UI)
 {
 	Mod* mod = g_pSquirrel<context>->getcallingmod(sqvm);
+	if (mod == nullptr)
+	{
+		g_pSquirrel<context>->raiseerror(sqvm, "Has to be called from a mod function!");
+		return SQRESULT_ERROR;
+	}
 
 	fs::path dir = savePath / fs::path(mod->m_ModDirectory).filename();
 	std::string fileName = g_pSquirrel<context>->getstring(sqvm, 1);
@@ -397,6 +402,11 @@ ADD_SQFUNC("bool", NSDoesFileExist, "string file", "", ScriptContext::SERVER | S
 ADD_SQFUNC("int", NSGetFileSize, "string file", "", ScriptContext::SERVER | ScriptContext::CLIENT | ScriptContext::UI)
 {
 	Mod* mod = g_pSquirrel<context>->getcallingmod(sqvm);
+	if (mod == nullptr)
+	{
+		g_pSquirrel<context>->raiseerror(sqvm, "Has to be called from a mod function!");
+		return SQRESULT_ERROR;
+	}
 
 	fs::path dir = savePath / fs::path(mod->m_ModDirectory).filename();
 	std::string fileName = g_pSquirrel<context>->getstring(sqvm, 1);
@@ -431,6 +441,11 @@ ADD_SQFUNC("int", NSGetFileSize, "string file", "", ScriptContext::SERVER | Scri
 ADD_SQFUNC("void", NSDeleteFile, "string file", "", ScriptContext::SERVER | ScriptContext::CLIENT | ScriptContext::UI)
 {
 	Mod* mod = g_pSquirrel<context>->getcallingmod(sqvm);
+	if (mod == nullptr)
+	{
+		g_pSquirrel<context>->raiseerror(sqvm, "Has to be called from a mod function!");
+		return SQRESULT_ERROR;
+	}
 
 	fs::path dir = savePath / fs::path(mod->m_ModDirectory).filename();
 	std::string fileName = g_pSquirrel<context>->getstring(sqvm, 1);
@@ -456,6 +471,12 @@ ADD_SQFUNC("array<string>", NS_InternalGetAllFiles, "string path", "", ScriptCon
 {
 	// depth 1 because this should always get called from Northstar.Custom
 	Mod* mod = g_pSquirrel<context>->getcallingmod(sqvm, 1);
+	if (mod == nullptr)
+	{
+		g_pSquirrel<context>->raiseerror(sqvm, "Has to be called from a mod function!");
+		return SQRESULT_ERROR;
+	}
+
 	fs::path dir = savePath / fs::path(mod->m_ModDirectory).filename();
 	std::string pathStr = g_pSquirrel<context>->getstring(sqvm, 1);
 	fs::path path = dir;
@@ -494,6 +515,12 @@ ADD_SQFUNC("array<string>", NS_InternalGetAllFiles, "string path", "", ScriptCon
 ADD_SQFUNC("bool", NSIsFolder, "string path", "", ScriptContext::CLIENT | ScriptContext::UI | ScriptContext::SERVER)
 {
 	Mod* mod = g_pSquirrel<context>->getcallingmod(sqvm);
+	if (mod == nullptr)
+	{
+		g_pSquirrel<context>->raiseerror(sqvm, "Has to be called from a mod function!");
+		return SQRESULT_ERROR;
+	}
+
 	fs::path dir = savePath / fs::path(mod->m_ModDirectory).filename();
 	std::string pathStr = g_pSquirrel<context>->getstring(sqvm, 1);
 	fs::path path = dir;
@@ -529,6 +556,12 @@ ADD_SQFUNC("bool", NSIsFolder, "string path", "", ScriptContext::CLIENT | Script
 ADD_SQFUNC("int", NSGetTotalSpaceRemaining, "", "", ScriptContext::CLIENT | ScriptContext::UI | ScriptContext::SERVER)
 {
 	Mod* mod = g_pSquirrel<context>->getcallingmod(sqvm);
+	if (mod == nullptr)
+	{
+		g_pSquirrel<context>->raiseerror(sqvm, "Has to be called from a mod function!");
+		return SQRESULT_ERROR;
+	}
+
 	fs::path dir = savePath / fs::path(mod->m_ModDirectory).filename();
 	g_pSquirrel<context>->pushinteger(sqvm, (MAX_FOLDER_SIZE - GetSizeOfFolder(dir)) / 1024);
 	return SQRESULT_NOTNULL;
